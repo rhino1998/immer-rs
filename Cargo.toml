@@ -1,0 +1,10 @@
+[package]
+name = "immer-rs"
+version = "0.1.0"
+authors = ["Riley Wilburn <rhino1998@gmail.com>"]
+
+[dependencies]
+libc = "*"
+
+[build-dependencies]
+cc = "1"
