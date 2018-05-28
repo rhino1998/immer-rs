@@ -1,0 +1,3 @@
+[submodule "src/immer"]
+	path = src/immer
+	url = https://github.com/arximboldi/immer.git
