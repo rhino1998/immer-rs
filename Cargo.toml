@@ -9,7 +9,7 @@ documentation = "https://github.com/rhino1998/immer-rs"
 description = "A wrapper around the C++ library immer for persistent datastructures"
 
 [dependencies]
-libc = "*"
+libc = "0.2"
 
 [build-dependencies]
 cc = "1"
