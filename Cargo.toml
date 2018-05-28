@@ -2,6 +2,8 @@
 name = "immer-rs"
 version = "0.1.0"
 authors = ["Riley Wilburn <rhino1998@gmail.com>"]
+license = "BSL-1.0"
+description = "A wrapper around the C++ library immer for persistent datastructures"
 
 [dependencies]
 libc = "*"
