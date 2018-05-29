@@ -1,3 +1,8 @@
+#![feature(test)]
+#![feature(concat_idents)]
+
+extern crate test;
+
 enum Buffer {}
 enum BufferBytesIter {}
 enum BufferBytesRIter {}
@@ -293,6 +298,7 @@ impl Iterator for FlexVectorRIter{
 mod tests {
     use super::*;
     use std::str::from_utf8;
+    use test::Bencher;
 
     macro_rules! assert_vec_eq {
         ($left:expr, $right:expr)=> ({
@@ -300,6 +306,82 @@ mod tests {
             assert_eq!(from_utf8(_b.as_slice()).unwrap(), $right);
         })
     }
+
+    macro_rules! bench_magnitude_push_back {
+        ($name1:ident, $name2:ident, $magnitude:expr) =>(
+            #[bench]
+            fn $name1(b: &mut Bencher){
+
+                b.iter(||{
+                    let mut flex = FlexVector::new();
+                    for _ in 0..($magnitude){
+                        flex = flex.push_back(65);;
+                    }
+                });
+            }
+            #[bench]
+            fn $name2(b: &mut Bencher){
+                let s = "A".repeat($magnitude);
+                let s2 = s.as_str();
+                b.iter(||{
+                    FlexVector::new().push_back_string(s2);
+                });
+            }
+        )
+    }
+
+    macro_rules! bench_magnitude_push_front {
+        ($name1:ident, $name2:ident, $magnitude:expr) =>(
+            #[bench]
+            fn $name1(b: &mut Bencher){
+
+                b.iter(||{
+                    let mut flex = FlexVector::new();
+                    for _ in 0..($magnitude){
+                        flex = flex.push_front(65);;
+                    }
+                });
+            }
+            #[bench]
+            fn $name2(b: &mut Bencher){
+                let s = "A".repeat($magnitude);
+                let s2 = s.as_str();
+                b.iter(||{
+                    FlexVector::new().push_front_string(s2);
+                });
+            }
+        )
+    }
+
+
+    macro_rules! bench_magnitude_insert {
+        ($name1:ident, $name2:ident, $mag1:expr, $mag2:expr) =>(
+            #[bench]
+            fn $name1(b: &mut Bencher){
+                let s = "A".repeat($mag1);
+                let s2 = s.as_str();
+                let flex = FlexVector::new().push_back_string(s2);
+                b.iter(||{
+                    let mut flex = flex.clone();
+                    for i in 0..($mag2){
+                        flex = flex.insert($mag1/2+i as usize, 65).unwrap();
+                    }
+                });
+            }
+            #[bench]
+            fn $name2(b: &mut Bencher){
+                let s = "A".repeat($mag1);
+                let t = "A".repeat($mag2);
+                let s2 = s.as_str();
+                let t2 = t.as_str();
+                let flex = FlexVector::new().push_back_string(s2);
+                b.iter(||{
+                    flex.insert_string($mag1/2, t2);
+                });
+            }
+        )
+    }
+
 
 
     #[test]
@@ -359,4 +441,48 @@ mod tests {
     }
 
 
+    bench_magnitude_push_back!(bench_push_back_byte_1, bench_push_back_string_1, 1);
+    bench_magnitude_push_back!(bench_push_back_byte_10, bench_push_back_string_10, 10);
+    bench_magnitude_push_back!(bench_push_back_byte_100, bench_push_back_string_100, 100);
+    bench_magnitude_push_back!(bench_push_back_byte_1000, bench_push_back_string_1000, 1000);
+    bench_magnitude_push_back!(bench_push_back_byte_10000, bench_push_back_string_10000, 10000);
+
+
+    bench_magnitude_push_front!(bench_push_front_byte_1, bench_push_front_string_1, 1);
+    bench_magnitude_push_front!(bench_push_front_byte_10, bench_push_front_string_10, 10);
+    bench_magnitude_push_front!(bench_push_front_byte_100, bench_push_front_string_100, 100);
+    bench_magnitude_push_front!(bench_push_front_byte_1000, bench_push_front_string_1000, 1000);
+    bench_magnitude_push_front!(bench_push_front_byte_10000, bench_push_front_string_10000, 10000);
+
+
+    bench_magnitude_insert!(bench_insert_byte_1_1, bench_insert_string_1_1, 1, 1);
+    bench_magnitude_insert!(bench_insert_byte_1_10, bench_insert_string_1_10, 1, 10);
+    bench_magnitude_insert!(bench_insert_byte_1_100, bench_insert_string_1_100, 1, 100);
+    bench_magnitude_insert!(bench_insert_byte_1_1000, bench_insert_string_1_1000, 1, 1000);
+    bench_magnitude_insert!(bench_insert_byte_1_10000, bench_insert_string_1_10000, 1, 10000);
+
+    bench_magnitude_insert!(bench_insert_byte_10_1, bench_insert_string_10_1, 10, 1);
+    bench_magnitude_insert!(bench_insert_byte_10_10, bench_insert_string_10_10, 10, 10);
+    bench_magnitude_insert!(bench_insert_byte_10_100, bench_insert_string_10_100, 10, 100);
+    bench_magnitude_insert!(bench_insert_byte_10_1000, bench_insert_string_10_1000, 10, 1000);
+    bench_magnitude_insert!(bench_insert_byte_10_10000, bench_insert_string_10_10000, 10, 10000);
+
+    bench_magnitude_insert!(bench_insert_byte_100_1, bench_insert_string_100_1, 100, 1);
+    bench_magnitude_insert!(bench_insert_byte_100_10, bench_insert_string_100_10, 100, 10);
+    bench_magnitude_insert!(bench_insert_byte_100_100, bench_insert_string_100_100, 100, 100);
+    bench_magnitude_insert!(bench_insert_byte_100_1000, bench_insert_string_100_1000, 100, 1000);
+    bench_magnitude_insert!(bench_insert_byte_100_10000, bench_insert_string_100_10000, 100, 10000);
+
+    bench_magnitude_insert!(bench_insert_byte_1000_1, bench_insert_string_1000_1, 1000, 1);
+    bench_magnitude_insert!(bench_insert_byte_1000_10, bench_insert_string_1000_10, 1000, 10);
+    bench_magnitude_insert!(bench_insert_byte_1000_100, bench_insert_string_1000_100, 1000, 100);
+    bench_magnitude_insert!(bench_insert_byte_1000_1000, bench_insert_string_1000_1000, 1000, 1000);
+    bench_magnitude_insert!(bench_insert_byte_1000_10000, bench_insert_string_1000_10000, 1000, 10000);
+
+    bench_magnitude_insert!(bench_insert_byte_10000_1, bench_insert_string_10000_1, 10000, 1);
+    bench_magnitude_insert!(bench_insert_byte_10000_10, bench_insert_string_10000_10, 10000, 10);
+    bench_magnitude_insert!(bench_insert_byte_10000_100, bench_insert_string_10000_100, 10000, 100);
+    bench_magnitude_insert!(bench_insert_byte_10000_1000, bench_insert_string_10000_1000, 10000, 1000);
+    bench_magnitude_insert!(bench_insert_byte_10000_10000, bench_insert_string_10000_10000, 10000, 10000);
+    bench_magnitude_insert!(aabench_insert_byte_100000000_100000000, aabench_insert_string_1000000000_100000000, 100000000, 100000000);
 }
