@@ -484,5 +484,4 @@ mod tests {
     bench_magnitude_insert!(bench_insert_byte_10000_100, bench_insert_string_10000_100, 10000, 100);
     bench_magnitude_insert!(bench_insert_byte_10000_1000, bench_insert_string_10000_1000, 10000, 1000);
     bench_magnitude_insert!(bench_insert_byte_10000_10000, bench_insert_string_10000_10000, 10000, 10000);
-    bench_magnitude_insert!(aabench_insert_byte_100000000_100000000, aabench_insert_string_1000000000_100000000, 100000000, 100000000);
 }
