@@ -1,6 +1,6 @@
 [package]
 name = "immer-rs"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Riley Wilburn <rhino1998@gmail.com>"]
 license = "BSL-1.0"
 homepage = "https://github.com/rhino1998/immer-rs"
